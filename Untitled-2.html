@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Weather Report</title>
+    <style>
+      body {
+        background-color: lightgray;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+        width: 50%;
+        height: 300px;
+        margin: 100px auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      h1 {
+        font-size: 36px;
+        margin-top: 20px;
+        text-align: center;
+      }
+      p {
+        font-size: 24px;
+        margin-top: 10px;
+        text-align: center;
+      }
+      #current-weather {
+        margin-top: 20px;
+        font-size: 18px;
+        text-align: center;
+      }
+      #weather-icon {
+        width: 100px;
+        height: 100px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 id="location"></h1>
+      <p id="current-weather"></p>
+      <img id="weather-icon" src="" alt="Weather Icon">
+    </div>
+  </body>
+  <script>
+    // Get the user's location
+    navigator.geolocation.getCurrentPosition(position => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      // Use the location to get the weather data
+      fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=2705e4424ec88cbf001a26de8830ecea&units=metric`)
+        .then(response => response.json())
+        .then(data => {
+          // Display the current weather
+          document.querySelector("#location").innerHTML = data.name;
+          document.querySelector("#current-weather").innerHTML = `The current weather is ${data.weather[0].description} with a temperature of ${data.main.temp}°C.`;
+
+          // Display a picture based on the temperature
+          const temperature = data.main.temp;
+          if (temperature > 35) {
+            document.querySelector("#weather-icon").src = "https://i.imgur.com/eLQHNyL.png";
+            document.querySelector("#weather-icon").alt = "Hot Weather Icon";
+          } else {
+            document.querySelector("#weather-icon").src = "https://i.imgur.com/UcT9bAO.png";
+            document.querySelector("#weather-icon").alt = "Cold Weather Icon";
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    });
+  </script>
+</html>
