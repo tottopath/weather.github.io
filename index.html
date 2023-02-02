@@ -2,10 +2,39 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Weather Report</title>
+    <title>Weather Forecast</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""/>
     <style>
+      #map {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+        width: 50%;
+        height: 425px;
+        margin: 100px auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      header {
+        background-color: lightcoral;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+      }
+
       body {
-        background-color: lightgray;
+        background-color: rgb(147, 190, 228);
         font-family: Arial, sans-serif;
       }
       .container {
@@ -13,7 +42,7 @@
         border-radius: 10px;
         box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
         width: 50%;
-        height: 300px;
+        height: 425px;
         margin: 100px auto;
         display: flex;
         flex-direction: column;
@@ -43,39 +72,79 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1 id="location">Weather</h1>
-      <p id="current-weather">Welcome to this weather app<br>Please allow it to access your approx location</p>
-      <img id="weather-icon" src="https://cdn-icons-png.flaticon.com/512/1779/1779940.png" alt="Weather Icon">
+    <header>
+      <nav>
+          <ul>
+          <li><a href="https://github.com/tottopath"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="40" height="40" alt="GitHub Logo"></a></li>
+          </ul>
+      </nav>
+      <h1 style="color: rgb(242, 239, 239); font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">My Playground</h1>
+      <nav>
+          <ul>
+          <li><a href="https://linkedin.com/in/shreyas-t-304007123"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/LinkedIn_2021.svg/1920px-LinkedIn_2021.svg.png" width="100" height="30" alt="LinkedIn Logo"></a></li>
+          </ul>
+      </nav>
+      </header>   
+    <div style="display: flex;">
+        <div class="container" style="width: 45%;">
+            <h1 id="location">Weather</h1>
+            <p id="current-weather">Welcome to this weather app<br>Please allow it to access your approx location</p>
+            <img id="weather-icon" src="https://cdn-icons-png.flaticon.com/512/1779/1779940.png" alt="Weather Icon">
+          </div>
+      <div id="map" style="width: 45%;"></div>
+      
     </div>
-  </body>
-  <script>
-    // Get the user's location
-    navigator.geolocation.getCurrentPosition(position => {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
-      // Use the location to get the weather data
-      fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=2705e4424ec88cbf001a26de8830ecea&units=metric`)
-        .then(response => response.json())
-        .then(data => {
-          // Display the current weather
-          document.querySelector("#location").innerHTML = data.name;
-          document.querySelector("#current-weather").innerHTML = `The current weather is ${data.weather[0].description} with a temperature of ${data.main.temp}°C.`;
-
-          // Display a picture based on the temperature
-          const temperature = data.main.temp;
-          if (temperature > 30) {
-            document.querySelector("#weather-icon").src = "https://static.vecteezy.com/system/resources/previews/002/641/143/original/hot-weather-icon-vector.jpg";
-            document.querySelector("#weather-icon").alt = "Hot Weather Icon";
-          } else {
-            document.querySelector("#weather-icon").src = "https://cdn-icons-png.flaticon.com/512/6232/6232631.png";
-            document.querySelector("#weather-icon").alt = "Cold Weather Icon";
+      <!-- leaflet.js -->
+      <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+  
+        <script>
+          let map;
+    
+          function initMap() {
+              // Get the user's location
+              navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+            
+                // Use the location to get the weather data
+                fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=2705e4424ec88cbf001a26de8830ecea&units=metric`)
+                  .then(response => response.json())
+                  .then(data => {
+                    // Display the current weather
+                    document.querySelector("#location").innerHTML = data.name;
+                    document.querySelector("#current-weather").innerHTML = `The current weather is ${data.weather[0].description} with a temperature of ${data.main.temp}°C.`;
+            
+                    // Display a picture based on the temperature
+                    const temperature = data.main.temp;
+                    if (temperature > 35) {
+                      document.querySelector("#weather-icon").src = "https://static.vecteezy.com/system/resources/previews/002/641/143/original/hot-weather-icon-vector.jpg";
+                      document.querySelector("#weather-icon").alt = "Hot Weather";
+  
+                  } else {
+                    document.querySelector("#weather-icon").src = "https://cdn-icons-png.flaticon.com/512/6232/6232631.png";
+                    document.querySelector("#weather-icon").alt = "Cold Weather";
+                  }
+          
+                  // Initialize the map
+                  map = L.map("map").setView([lat, lon], 13);
+                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  }).addTo(map);
+          
+                  // Mark the current location with a red circle
+                  L.circle([lat, lon], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.5,
+                    radius: 500
+                  }).addTo(map);
+                });
+            });
           }
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    });
-  </script>
-</html>
+          
+      </script>
+      <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDXZvz8WYfNjQKjqLgU6vF8W4RU6aNUjKM&callback=initMap"></script>
+    </body>
+  </html>
